@@ -1,5 +1,5 @@
 // Import the express module
-import express from 'express';
+import express from "express";
 
 // Create an instance of an Express application
 const app = express();
@@ -8,10 +8,10 @@ const app = express();
 app.use(express.urlencoded({ extended: true }));
 
 // Serve static files from the 'public' directory
-app.use(express.static('public'));
+app.use(express.static("public"));
 
 // Add EJS as template engine
-app.set('view engine', 'ejs');
+app.set("view engine", "ejs");
 
 // Define the port number where our server will listen
 const PORT = 3000;
@@ -24,54 +24,53 @@ const tasks = [];
  */
 
 // Home page with task form
-app.get('/', (req, res) => {
-    res.render('home');
+app.get("/", (req, res) => {
+  res.render("home");
 });
 
 // Dashboard page to view all tasks
-app.get('/dashboard', (req, res) => {
-    res.render('dashboard', { tasks });
+app.get("/dashboard", (req, res) => {
+  res.render("dashboard", { tasks });
 });
 
 // Handle new task submission
-app.post('/add-task', (req, res) => {
+app.post("/add-task", (req, res) => {
+  // Get form data from request body
+  const task = {
+    title: req.body.title,
+    description: req.body.description,
+    priority: req.body.priority,
+    dueDate: req.body.due,
+    status: "pending",
+    timestamp: new Date(),
+  };
 
-    // Get form data from request body
-    const task = {
-        title: req.body.title,
-        description: req.body.description,
-        priority: req.body.priority,
-        dueDate: req.body.due,
-        status: 'pending',
-        timestamp: new Date()
-    };
+  if (task.title.trim() === "") {
+    res.send("Invalid Title!");
+    return;
+  }
 
-    if (task.title.trim() !== "") {
-        res.send("Invalid Title!");
-        return;
-    }
+  if (task.description.trim() === "") {
+    res.send("Invalid Description!");
+    return;
+  }
 
-    if (task.description.trim() !== "") {
-        res.send("Invalid Description!");
-        return;
-    }
+  if (!["low", "medium", "high"].includes(task.priority)) {
+    res.send("Invalid Priority!");
+    return;
+  }
 
-    if (!["low", "medium", "high"].includes(task.priority)) {
-        res.send("Invalid Priority!");
-        return;
-    }
-    
-    // Save task to our array
-    tasks.push(task);
-    
-    // Log the task to the console
-    console.log('New task added:', task);
+  // Save task to our array
+  tasks.push(task);
 
-    // Render confirmation page instead of redirecting
-    res.render('confirmation', { task });
+  // Log the task to the console
+  console.log("New task added:", task);
+
+  // Render confirmation page instead of redirecting
+  res.render("confirmation", { task });
 });
 
 // Start the server and make it listen on our specified port
 app.listen(PORT, () => {
-    console.log(`Server is running at http://localhost:${PORT}`);
-}); 
+  console.log(`Server is running at http://localhost:${PORT}`);
+});
